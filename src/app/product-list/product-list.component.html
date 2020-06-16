@@ -1,4 +1,4 @@
-<app-product-edit (addProduct)="onAddProduct($event)"></app-product-edit>
+<app-product-edit></app-product-edit>
 <div class="row">
   <div class="col-xs-10"></div>
   <hr />
@@ -6,8 +6,9 @@
     <a
       style="cursor: pointer;"
       class="list-group-item clearfix"
-      *ngFor="let product of products"
+      *ngFor="let product of products; let i = index"
       [appCustom1]="product.color"
+      (click)="onProductClick(i)"
     >
       <div class="pull-left">
         <h4 class="list-group-item-heading">{{ product.name }}</h4>

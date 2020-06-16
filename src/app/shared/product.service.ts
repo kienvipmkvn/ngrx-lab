@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 })
 export class ProductService{
     productChanged = new Subject<Product[]>();
+    productSelected = new Subject<number>();
     products: Product[] = [
         new Product(
           'Lux A2.0 Standard',
@@ -35,5 +36,18 @@ export class ProductService{
             this.products.push(product);
         }
         this.productChanged.next(this.products.slice())
+    }
+    clickProduct(index: number){
+        this.productSelected.next(index);
+    }
+
+    updateProduct(index: number, product: Product){
+        this.products[index] = product;
+        this.productChanged.next(this.products.slice());
+    }
+
+    deleteProduct(index: number){
+        this.products.splice(index, 1);
+        this.productChanged.next(this.products.slice());
     }
 }

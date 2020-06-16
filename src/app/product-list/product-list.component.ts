@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Product } from '../shared/product.model';
 import { ProductService } from '../shared/product.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 export class ProductListComponent implements OnInit, OnDestroy {
   products: Product[];
   productSubcription: Subscription;
+  newSubject = new Subject<Product>();
   constructor(private productService: ProductService) {}
 
   ngOnInit(): void {
@@ -23,7 +24,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.productSubcription.unsubscribe();
   }
 
-  onAddProduct(product: Product){
-    this.productService.addProduct(product);
+  onProductClick(index: number){
+    this.productService.clickProduct(index);
   }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Company } from '../company.model';
 import { ProductService } from 'src/app/shared/product.service';
 import { CompanyService } from 'src/app/shared/company.service';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 @Component({
   selector: 'app-company-detail',
@@ -15,7 +15,8 @@ export class CompanyDetailComponent implements OnInit {
   constructor(
     private companyService: CompanyService, 
     private productService: ProductService, 
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.route.params.subscribe((params:Params)=>{
@@ -26,5 +27,10 @@ export class CompanyDetailComponent implements OnInit {
 
   toProduct(){
     this.productService.addProducts(this.company.products);
+  }
+
+  onDelete(){
+    this.companyService.deleteCompany(this.id);
+    this.router.navigate(['company'])
   }
 }

@@ -1,11 +1,13 @@
 import { Company } from '../companies/company.model';
 import { Injectable } from '@angular/core';
 import { Product } from './product.model';
+import { Subject } from 'rxjs';
 
 @Injectable({
 	providedIn:'root'
 })
 export class CompanyService {
+  companyChanged = new Subject<Company[]>();
 
   companies: Company[] = [
     new Company(
@@ -34,5 +36,20 @@ export class CompanyService {
 
   getCompanies(){
       return this.companies.slice();
+  }
+
+  updateCompany(index: number, company: Company){
+    this.companies[index] = company;
+    this.companyChanged.next(this.companies.slice());
+  }
+
+  addCompany(company: Company){
+    this.companies.push(company);
+    this.companyChanged.next(this.companies.slice());
+  }
+
+  deleteCompany(id:number){
+    this.companies.splice(id, 1);
+    this.companyChanged.next(this.companies.slice());
   }
 }

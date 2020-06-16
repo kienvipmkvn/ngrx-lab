@@ -4,6 +4,7 @@
       src="{{ company.imgPath }}"
       alt="{{ company.name }}"
       class="img-responsive"
+      style="max-height: 100px;"
     />
   </div>
 </div>
@@ -24,7 +25,7 @@
         <li>
           <a style="cursor: pointer;" (click)="toProduct()">To product</a>
         </li>
-        <li><a style="cursor: pointer;">Delete company</a></li>
+        <li><a style="cursor: pointer;" (click)="onDelete()">Delete company</a></li>
       </ul>
     </div>
   </div>
@@ -33,7 +34,7 @@
   <div class="col-xs-12">
     Number of employees: {{ company.numberofEmployee }}<br />
     Address: {{ company.address }}<br />
-    Establishment day: {{ company.establishmentDay }}
+    Establishment year: {{ company.establishmentDay | date: 'dd/MM/yyyy' }}
   </div>
 </div>
 <div class="row">
