@@ -6,6 +6,7 @@ import { DatePipe } from '@angular/common';
 import { CompanyService } from 'src/app/shared/company.service';
 import { Company } from '../company.model';
 import { Product } from 'src/app/shared/product.model';
+import { DataStorageService } from 'src/app/shared/data-storage.service';
 
 @Component({
   selector: 'app-company-edit',
@@ -21,7 +22,8 @@ export class CompanyEditComponent implements OnInit {
     private route: ActivatedRoute,
     private companyService: CompanyService,
     private datePipe: DatePipe,
-    private router: Router
+    private router: Router,
+    private dataService: DataStorageService
   ) {}
 
   ngOnInit(): void {
@@ -33,25 +35,48 @@ export class CompanyEditComponent implements OnInit {
   }
 
   onSubmit() {
-    const name = this.companyForm.value["name"];
-    const numberofEmployee = this.companyForm.value["noe"];
-    const address = this.companyForm.value["add"];
-    const establishmentDay = this.companyForm.value["esday"];
-    const img = this.companyForm.value["imgPath"];
+    const id = +this.companyForm.value['id']
+    const name = this.companyForm.value['name'];
+    const numberofEmployee = this.companyForm.value['noe'];
+    const address = this.companyForm.value['add'];
+    const establishmentDay = this.companyForm.value['esday'];
+    const img = this.companyForm.value['imgPath'];
     let products: Product[] = [];
-    for (const formGroup of (<FormArray>this.companyForm.get("products")).controls) {
+    for (const formGroup of (<FormArray>this.companyForm.get('products'))
+      .controls) {
       products.push(formGroup.value);
     }
 
-    const company = new Company(name, numberofEmployee, address, img, establishmentDay, products);
-    if(this.editMode){
+    const company = new Company(
+      id, 
+      name,
+      numberofEmployee,
+      address,
+      img,
+      establishmentDay,
+      products
+    );
+    let com = {
+      CompanyID: company.id,
+      Name: company.name,
+      NumberofEmployee: company.numberofEmployee,
+      Address: company.address,
+      ImgPath: company.imgPath,
+      EstablishmentDay: company.establishmentDay,
+      ListProduct: company.products
+    };
+    if (this.editMode) {
+      this.dataService.putCompany(com);
       this.companyService.updateCompany(this.id, company);
-    }else{
-      this.companyService.addCompany(company);
+    } else {
+      this.dataService.postCompany(com);
     }
+    console.log(com);
+    this.router.navigate(['company']);
   }
 
   private initForm() {
+    let id = null;
     let name = '';
     let noe: number = null;
     let add = '';
@@ -61,6 +86,7 @@ export class CompanyEditComponent implements OnInit {
 
     if (this.editMode) {
       const company = this.companyService.getCompanies()[this.id];
+      id = company.id;
       name = company.name;
       noe = company.numberofEmployee;
       add = company.address;
@@ -70,6 +96,7 @@ export class CompanyEditComponent implements OnInit {
         for (const product of company.products) {
           products.push(
             new FormGroup({
+              id: new FormControl(product.id, Validators.required),
               name: new FormControl(product.name, Validators.required),
               price: new FormControl(product.price, [
                 Validators.required,
@@ -84,6 +111,7 @@ export class CompanyEditComponent implements OnInit {
     }
 
     this.companyForm = new FormGroup({
+      id: new FormControl(id, Validators.required),
       name: new FormControl(name, Validators.required),
       noe: new FormControl(noe, Validators.required),
       add: new FormControl(add, Validators.required),
@@ -100,6 +128,7 @@ export class CompanyEditComponent implements OnInit {
   onAddProduct() {
     (<FormArray>this.companyForm.get('products')).controls.push(
       new FormGroup({
+        id: new FormControl(null, Validators.required),
         name: new FormControl(null, Validators.required),
         price: new FormControl(null, [
           Validators.required,
@@ -111,11 +140,11 @@ export class CompanyEditComponent implements OnInit {
     );
   }
 
-  onCancel(){
+  onCancel() {
     this.router.navigate(['company']);
   }
 
-  onDeleteProduct(index: number){
-    (<FormArray>this.companyForm.get("products")).controls.splice(index, 1);
+  onDeleteProduct(index: number) {
+    (<FormArray>this.companyForm.get('products')).controls.splice(index, 1);
   }
 }

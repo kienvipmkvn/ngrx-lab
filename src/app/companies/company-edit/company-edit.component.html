@@ -3,13 +3,14 @@
     <form [formGroup]="companyForm" (submit)="onSubmit()">
       <div class="row">
         <div class="col-xs-12">
-          <button class="btn btn-success" type="submit">Save</button>
+          <button class="btn btn-success" type="submit" >Save</button>
           <button class="btn btn-danger" type="button" (click)="onCancel()">Cancel</button>
         </div>
       </div>
       <div class="row">
         <div class="col-xs-6">
           <div class="form-group">
+            <input type="hidden" id="id" formControlName="id">
             <label for="name">Name</label>
             <input
               class="form-control"
@@ -88,6 +89,7 @@
         >
           <div class="row">
             <div class="col-xs-4">
+              <input type="hidden" id="id" formControlName="id">
               <input
                 class="form-control"
                 type="text"

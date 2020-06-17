@@ -3,6 +3,7 @@
     <form (ngSubmit)="onSubmitForm(f)" #f="ngForm">
       <div class="row">
         <div class="col-sm-6 form-group">
+          <input type="hidden" ngModel name="productId" required>
           <label for="name">Name</label>
           <input
             type="text"

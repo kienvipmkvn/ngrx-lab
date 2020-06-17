@@ -3,6 +3,7 @@ import { Company } from '../company.model';
 import { ProductService } from 'src/app/shared/product.service';
 import { CompanyService } from 'src/app/shared/company.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { DataStorageService } from 'src/app/shared/data-storage.service';
 
 @Component({
   selector: 'app-company-detail',
@@ -16,7 +17,8 @@ export class CompanyDetailComponent implements OnInit {
     private companyService: CompanyService, 
     private productService: ProductService, 
     private route: ActivatedRoute,
-    private router: Router) { }
+    private router: Router,
+    private dataService: DataStorageService) { }
 
   ngOnInit(): void {
     this.route.params.subscribe((params:Params)=>{
@@ -30,6 +32,7 @@ export class CompanyDetailComponent implements OnInit {
   }
 
   onDelete(){
+    this.dataService.deleteCompany(this.company.id);
     this.companyService.deleteCompany(this.id);
     this.router.navigate(['company'])
   }

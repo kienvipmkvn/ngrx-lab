@@ -1,6 +1,7 @@
 import { Product } from '../shared/product.model';
 
 export class Company {
+    id: number
     name: string;
     numberofEmployee: number;
     address: string;
@@ -8,7 +9,8 @@ export class Company {
     establishmentDay: Date;
     products: Product[]
 
-    constructor(name: string, noe: number, address: string, imgPath:string, esDay:Date, products: Product[]){
+    constructor(id: number, name: string, noe: number, address: string, imgPath:string, esDay:Date, products: Product[]){
+        this.id = id;
         this.name=name;
         this.numberofEmployee = noe;
         this.address = address;
