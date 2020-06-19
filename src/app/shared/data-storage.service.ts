@@ -76,6 +76,10 @@ export class DataStorageService {
       .subscribe((companies) => {
         this.companyService.setCompanies(companies);
         this.companyService.isLoading = false;
+        this.companyService.errorMessage = null;
+      }, error=>{
+        this.companyService.isLoading = false;
+        this.companyService.errorMessage = "Failed to load data!";
       });
   }
 

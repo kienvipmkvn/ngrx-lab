@@ -16,7 +16,7 @@ const appRoutes: Routes = [
         {path: ':id', component: CompanyDetailComponent},
         {path: ':id/edit', component: CompanyEditComponent},
     ]},
-    {path: 'product', component: ProductListComponent},
+    {path: 'product', component: ProductListComponent, canActivate: [AuthGuard]},
     {path: 'auth', component: AuthComponent}
 ]
 

@@ -7,6 +7,9 @@
 <div class="row" *ngIf="companyService.isLoading" style="text-align: center;">
   <app-loading-spinner></app-loading-spinner>
 </div>
+<div class="row" *ngIf="companyService.errorMessage && !companyService.isLoading" style="text-align: center;">
+  {{companyService.errorMessage}}
+</div>
 <div class="row" *ngIf="!companyService.isLoading">
   <div class="col-xs-12">
     <app-company-item

@@ -9,6 +9,7 @@ import { Subject } from 'rxjs';
 export class CompanyService {
   isLoading = false;
   companyChanged = new Subject<Company[]>();
+  errorMessage: string = null;
 
   companies: Company[] = [];
 
