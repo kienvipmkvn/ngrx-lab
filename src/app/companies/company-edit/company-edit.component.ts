@@ -71,7 +71,6 @@ export class CompanyEditComponent implements OnInit {
     } else {
       this.dataService.postCompany(com);
     }
-    console.log(com);
     this.router.navigate(['company']);
   }
 

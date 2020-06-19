@@ -3,7 +3,7 @@
     <form (ngSubmit)="onSubmitForm(f)" #f="ngForm">
       <div class="row">
         <div class="col-sm-6 form-group">
-          <input type="hidden" ngModel name="productId" required>
+          <input type="hidden" ngModel name="productId" ngModel required>
           <label for="name">Name</label>
           <input
             type="text"
@@ -76,7 +76,7 @@
 
       <div class="row">
         <div class="col-xs-12">
-          <button class="btn btn-success" type="submit" [disabled]="f.invalid">
+          <button class="btn btn-success" type="submit" [disabled]="name.invalid || price.invalid || color.invalid">
             {{ isEdit ? "Edit" : "Add" }}
           </button>
           <button class="btn btn-danger" type="button" (click)="onDelete()">

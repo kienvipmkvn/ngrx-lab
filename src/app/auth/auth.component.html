@@ -1,0 +1,81 @@
+<div class="container" style="width: 600px;">
+  <!-- Outer Row -->
+  <div class="row justify-content-center">
+    <div class="col-xl-10 col-lg-12 col-md-9">
+      <div class="card o-hidden border-0 shadow-lg my-5">
+        <div class="card-body p-0">
+          <!-- Nested Row within Card Body -->
+          <div class="row alert alert-danger" *ngIf="errorMsg">
+            <p>{{ errorMsg }}</p>
+          </div>
+          <div class="row alert alert-success" *ngIf="!errorMsg && signUpSuccess">
+            <p>{{ signUpSuccess }}</p>
+          </div>
+          <div class="p-5" *ngIf="isLoading" style="text-align: center;">
+            <app-loading-spinner></app-loading-spinner>
+          </div>
+          <div class="p-5" *ngIf="!isLoading">
+            <form #f="ngForm" (submit)="onSubmit(f)">
+              <div class="row">
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    class="form-control"
+                    ngModel
+                    name="email"
+                    required
+                    email
+                    autocomplete="off"
+                    #email="ngModel"
+                  />
+                  <span
+                    class="block-help"
+                    style="color: red;"
+                    *ngIf="email.invalid && email.touched"
+                    >This field is invalid!</span
+                  >
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input
+                    type="password"
+                    id="password"
+                    class="form-control"
+                    ngModel
+                    name="password"
+                    required
+                    #password="ngModel"
+                  />
+                  <span
+                    class="block-help"
+                    style="color: red;"
+                    *ngIf="password.invalid && password.touched"
+                    >This field is required!</span
+                  >
+                </div>
+              </div>
+              <div class="row">
+                <button
+                  class="btn btn-info"
+                  type="submit"
+                  [disabled]="f.invalid"
+                >
+                  {{ isLogin ? "Login" : "Sign up" }}
+                </button>
+                |
+                <button class="btn btn-info" type="button" (click)="onSwitch()">
+                  Swith to {{ isLogin ? "Sign up" : "Login" }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

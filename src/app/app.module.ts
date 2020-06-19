@@ -17,6 +17,8 @@ import { Custom2Directive } from './custom/custom2.directive';
 import { AppRoutingModule } from './app-routing.module';
 import { CompanyStartComponent } from './companies/company-start/company-start.component';
 import { CompanyEditComponent } from './companies/company-edit/company-edit.component';
+import { AuthComponent } from './auth/auth.component';
+import { LoadingSpinnerComponent } from './shared/app-loading-spinner/app-loading-spinner.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,9 @@ import { CompanyEditComponent } from './companies/company-edit/company-edit.comp
     Custom1,
     Custom2Directive,
     CompanyStartComponent,
-    CompanyEditComponent
+    CompanyEditComponent,
+    AuthComponent,
+    LoadingSpinnerComponent
   ],
   imports: [
     BrowserModule,

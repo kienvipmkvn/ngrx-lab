@@ -11,8 +11,8 @@ import { Subscription } from 'rxjs';
 export class CompanyListComponent implements OnInit, OnDestroy {
   companies: Company[];
   subscription: Subscription;
-
-  constructor(private companyService: CompanyService) {}
+  isLoading = false;
+  constructor(public companyService: CompanyService) {}
 
   ngOnInit(): void {
     this.companies = this.companyService.getCompanies();

@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 	providedIn:'root'
 })
 export class CompanyService {
+  isLoading = false;
   companyChanged = new Subject<Company[]>();
 
   companies: Company[] = [];

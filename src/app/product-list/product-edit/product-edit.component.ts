@@ -3,6 +3,8 @@ import { ProductService } from 'src/app/shared/product.service';
 import { NgForm } from '@angular/forms';
 import { Product } from 'src/app/shared/product.model';
 import { Subscription } from 'rxjs';
+import { ProductStorageService } from 'src/app/shared/product-storage.service';
+import { DataStorageService } from 'src/app/shared/data-storage.service';
 
 @Component({
   selector: 'app-product-edit',
@@ -14,13 +16,15 @@ export class ProductEditComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   isEdit: boolean;
   edittingIndex: number;
-  constructor(private productService: ProductService) {}
+  productEdittingId: number;
+  constructor(private productService: ProductService, private productStorage: ProductStorageService) {}
 
   ngOnInit(): void {
     this.subscription = this.productService.productSelected.subscribe(
       (index) => {
         const product = this.productService.getProducts()[index];
         this.form.setValue({
+          productId: product.id,
           name: product.name,
           price: product.price,
           color: product.color,
@@ -28,6 +32,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         });
         this.edittingIndex = index;
         this.isEdit = true;
+        this.productEdittingId = product.id;
       }
     );
   }
@@ -47,6 +52,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         value.imgPath
       );
       this.productService.updateProduct(this.edittingIndex, prod);
+      this.productStorage.editProduct(prod.id, prod);
+      
       form.reset();
       this.isEdit = false;
       return;
@@ -58,7 +65,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
       form.value.color,
       form.value.imgPath
     );
-    this.productService.addProduct(prod);
+    this.productStorage.createProduct(prod);
   }
 
   onClear() {
@@ -68,6 +75,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
   onDelete() {
     this.productService.deleteProduct(this.edittingIndex);
+    this.productStorage.deleteProduct(this.productEdittingId);
     this.form.reset();
     this.isEdit = false;
   }

@@ -10,7 +10,7 @@ import { Product } from './product.model';
   providedIn: 'root',
 })
 export class DataStorageService {
-  readonly rootUrl = 'https://localhost:44388/api/';
+  readonly rootUrl = "https://localhost:44388/api/";
 
   constructor(
     private http: HttpClient,
@@ -18,6 +18,7 @@ export class DataStorageService {
   ) {}
 
   getCompanies() {
+    this.companyService.isLoading = true;
     this.http
       .get(this.rootUrl + 'Management')
       .pipe(
@@ -43,7 +44,6 @@ export class DataStorageService {
               }
             ]
           ) => {
-            console.log(companies);
             let companyList: Company[] = [];
             for (const company of companies) {
               let prods: Product[] = [];
@@ -75,7 +75,7 @@ export class DataStorageService {
       )
       .subscribe((companies) => {
         this.companyService.setCompanies(companies);
-        console.log(companies);
+        this.companyService.isLoading = false;
       });
   }
 
@@ -86,6 +86,7 @@ export class DataStorageService {
     Address: string;
     ImgPath: string;
     EstablishmentDay: Date;
+    ListProduct: Product[]
   }) {
     this.companyService.addCompany(
       new Company(
@@ -95,7 +96,7 @@ export class DataStorageService {
         company.Address,
         company.ImgPath,
         company.EstablishmentDay,
-        []
+        company.ListProduct
       )
     );
     this.http.post(this.rootUrl + 'Management', company).subscribe();
@@ -138,7 +139,7 @@ export class DataStorageService {
       EstablishmentDay: company.EstablishmentDay,
       ListProduct: products,
     };
-
+    console.log(newCompany);
     this.http
       .put(this.rootUrl + 'Management/' + company.CompanyID, newCompany)
       .subscribe();
