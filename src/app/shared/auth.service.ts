@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
 
 export interface AuthResponseData {
   idToken: string;
@@ -18,8 +16,10 @@ export interface AuthResponseData {
 export class AuthService {
   readonly urlSignup =
     'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyArSOV76OtAaOkz_jkIsLmt9PCHxTMseV0';
+
   readonly urlLogin =
     'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyArSOV76OtAaOkz_jkIsLmt9PCHxTMseV0';
+    
   isLogin = false;
 
   constructor(private http: HttpClient) {}
@@ -40,5 +40,20 @@ export class AuthService {
       password: password,
       returnSecurityToken: true,
     })
+  }
+
+  autoLogin(){
+    const userData = localStorage.getItem('userData');
+    if(userData==null) return;
+    else this.isLogin = true;
+  }
+
+  logout(){
+    this.isLogin = false;
+    localStorage.clear();
+  }
+
+  storeResposeData(resData: AuthResponseData){
+    localStorage.setItem("userData", JSON.stringify(resData));
   }
 }

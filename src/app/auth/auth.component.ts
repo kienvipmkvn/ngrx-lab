@@ -18,6 +18,7 @@ export class AuthComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit(form: NgForm) {
+    //login
     if (this.isLogin) {
       this.isLoading = true;
       this.authService
@@ -28,6 +29,7 @@ export class AuthComponent implements OnInit {
             this.isLoading = false;
             this.authService.isLogin = true;
             this.router.navigate(['company']);
+            this.authService.storeResposeData(resData);
           },
           (error) => {
             this.isLoading = false;
@@ -44,12 +46,12 @@ export class AuthComponent implements OnInit {
                 this.errorMsg = 'An unknown error occured!';
                 break;
             }
-            console.log(this.errorMsg);
             console.log(error);
           }
         );
       return;
     }
+    //sign up
     this.isLoading = true;
     this.authService
       .signUp(form.value['email'], form.value['password'])
@@ -86,5 +88,9 @@ export class AuthComponent implements OnInit {
 
   onSwitch() {
     this.isLogin = !this.isLogin;
+  }
+
+  onClose(){
+    this.errorMsg = null;
   }
 }

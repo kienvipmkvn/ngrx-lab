@@ -10,7 +10,7 @@ import { Product } from './product.model';
   providedIn: 'root',
 })
 export class DataStorageService {
-  readonly rootUrl = "https://localhost:44388/api/";
+  readonly rootUrl = "http://localhost:44388/api/";
 
   constructor(
     private http: HttpClient,
