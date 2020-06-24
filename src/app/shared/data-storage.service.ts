@@ -1,87 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 import { Company } from '../companies/company.model';
-import { CompanyService } from './company.service';
 import { Product } from './product.model';
+import * as fromApp from '../store/app.reducer';
+import * as CompanyAction from '../companies/store/company.action';
+import { Store } from '@ngrx/store';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataStorageService {
-  readonly rootUrl = "http://localhost:44388/api/";
+  readonly rootUrl = 'http://localhost:44388/api/';
 
   constructor(
     private http: HttpClient,
-    private companyService: CompanyService
+    private store: Store<fromApp.AppState>
   ) {}
-
-  getCompanies() {
-    this.companyService.isLoading = true;
-    this.http
-      .get(this.rootUrl + 'Management')
-      .pipe(
-        map(
-          (
-            companies: [
-              {
-                CompanyID: number;
-                Name: string;
-                NumberofEmployee: number;
-                Address: string;
-                ImgPath: string;
-                EstablishmentDay: Date;
-                ListProduct: [
-                  {
-                    ProductID: number;
-                    Name: string;
-                    Price: number;
-                    Color: string;
-                    ImgPath: string;
-                  }
-                ];
-              }
-            ]
-          ) => {
-            let companyList: Company[] = [];
-            for (const company of companies) {
-              let prods: Product[] = [];
-              for (const product of company.ListProduct) {
-                prods.push(
-                  new Product(
-                    product.ProductID,
-                    product.Name,
-                    product.Price,
-                    product.Color,
-                    product.ImgPath
-                  )
-                );
-              }
-              let com = new Company(
-                company.CompanyID,
-                company.Name,
-                company.NumberofEmployee,
-                company.Address,
-                company.ImgPath,
-                company.EstablishmentDay,
-                prods
-              );
-              companyList.push(com);
-            }
-            return companyList;
-          }
-        )
-      )
-      .subscribe((companies) => {
-        this.companyService.setCompanies(companies);
-        this.companyService.isLoading = false;
-        this.companyService.errorMessage = null;
-      }, error=>{
-        this.companyService.isLoading = false;
-        this.companyService.errorMessage = "Failed to load data!";
-      });
-  }
 
   postCompany(company: {
     CompanyID: number;
@@ -90,20 +26,24 @@ export class DataStorageService {
     Address: string;
     ImgPath: string;
     EstablishmentDay: Date;
-    ListProduct: Product[]
+    ListProduct: Product[];
   }) {
-    this.companyService.addCompany(
-      new Company(
-        company.CompanyID,
-        company.Name,
-        company.NumberofEmployee,
-        company.Address,
-        company.ImgPath,
-        company.EstablishmentDay,
-        company.ListProduct
-      )
-    );
-    this.http.post(this.rootUrl + 'Management', company).subscribe();
+    
+    this.http.post<number>(this.rootUrl + 'Management', company).subscribe(id=>{
+      this.store.dispatch(
+        new CompanyAction.AddCompany(
+          new Company(
+            id,
+            company.Name,
+            company.NumberofEmployee,
+            company.Address,
+            company.ImgPath,
+            company.EstablishmentDay,
+            company.ListProduct
+          )
+        )
+      );
+    });
   }
 
   putCompany(company: {
@@ -122,7 +62,7 @@ export class DataStorageService {
       Price: number;
       ImgPath: string;
     }[] = [];
-    
+
     for (const prod of company.ListProduct) {
       const product = {
         ProductID: prod.id,
@@ -133,7 +73,7 @@ export class DataStorageService {
       };
       products.push(product);
     }
-    
+
     const newCompany = {
       CompanyID: company.CompanyID,
       Name: company.Name,

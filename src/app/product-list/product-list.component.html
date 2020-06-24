@@ -6,7 +6,7 @@
     <a
       style="cursor: pointer;"
       class="list-group-item clearfix"
-      *ngFor="let product of products; let i = index"
+      *ngFor="let product of (products | async).products; let i = index"
       [appCustom1]="product.color"
       (click)="onProductClick(i)"
     >

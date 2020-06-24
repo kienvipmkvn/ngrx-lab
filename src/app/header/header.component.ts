@@ -1,7 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DataStorageService } from '../shared/data-storage.service';
-import { AuthService } from '../shared/auth.service';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
+
+import { DataStorageService } from '../shared/data-storage.service';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from '../auth/store/auth.action';
+import * as CompanyActions from '../companies/store/company.action'
 
 @Component({
   selector: 'app-header',
@@ -12,14 +16,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private subsciption: Subscription;
   isLogin = false;
 
-  constructor(private dataService: DataStorageService,
-    public authService: AuthService) { }
+  constructor(public store: Store<fromApp.AppState>) { }
 
   ngOnInit(): void {
+    this.store.select('auth').subscribe(stateData=>{
+      this.isLogin = stateData.isLogin;
+    })
   }
 
   fetchData(){
-    this.dataService.getCompanies();
+    // this.dataService.getCompanies();
+    this.store.dispatch(new CompanyActions.FetchCompanies())
   }
 
   ngOnDestroy(){
@@ -27,6 +34,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onLogout(){
-    this.authService.logout();
+    //this.authService.logout();
+    localStorage.clear();
+    this.store.dispatch(new AuthActions.Logout());
   }
 }

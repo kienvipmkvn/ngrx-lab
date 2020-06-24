@@ -1,29 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 import { DatePipe } from '@angular/common';
 
-import { CompanyService } from 'src/app/shared/company.service';
+import * as CompanyActions from '../store/company.action';
 import { Company } from '../company.model';
 import { Product } from 'src/app/shared/product.model';
 import { DataStorageService } from 'src/app/shared/data-storage.service';
+import * as fromApp from '../../store/app.reducer';
 
 @Component({
   selector: 'app-company-edit',
   templateUrl: './company-edit.component.html',
   styleUrls: ['./company-edit.component.css'],
 })
-export class CompanyEditComponent implements OnInit {
+export class CompanyEditComponent implements OnInit, OnDestroy {
   id: number;
   editMode = false;
   companyForm: FormGroup;
+  private sub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
-    private companyService: CompanyService,
     private datePipe: DatePipe,
     private router: Router,
-    private dataService: DataStorageService
+    private dataService: DataStorageService,
+    private store: Store<fromApp.AppState>,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -34,8 +41,12 @@ export class CompanyEditComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    if (this.sub != null) this.sub.unsubscribe();
+  }
+
   onSubmit() {
-    const id = +this.companyForm.value['id']
+    if(confirm(this.editMode? "Confirm Edit?":"Confirm Create?")){const id = +this.companyForm.value['id'];
     const name = this.companyForm.value['name'];
     const numberofEmployee = this.companyForm.value['noe'];
     const address = this.companyForm.value['add'];
@@ -48,7 +59,7 @@ export class CompanyEditComponent implements OnInit {
     }
 
     const company = new Company(
-      id, 
+      id,
       name,
       numberofEmployee,
       address,
@@ -63,15 +74,21 @@ export class CompanyEditComponent implements OnInit {
       Address: company.address,
       ImgPath: company.imgPath,
       EstablishmentDay: company.establishmentDay,
-      ListProduct: company.products
+      ListProduct: company.products,
     };
     if (this.editMode) {
       this.dataService.putCompany(com);
-      this.companyService.updateCompany(this.id, company);
+      //this.companyService.updateCompany(this.id, company);
+      this.store.dispatch(
+        new CompanyActions.UpdateCompany({ company: company, index: this.id })
+      );
+      this.toastr.success("Edit success!", "ZZZ");
     } else {
       this.dataService.postCompany(com);
+      //this.store.dispatch(new CompanyActions.AddCompany(company));
+      this.toastr.success("Create success!", "ZZZ");
     }
-    this.router.navigate(['company']);
+    this.router.navigate(['company']);}
   }
 
   private initForm() {
@@ -84,33 +101,48 @@ export class CompanyEditComponent implements OnInit {
     let products = new FormArray([]);
 
     if (this.editMode) {
-      const company = this.companyService.getCompanies()[this.id];
-      id = company.id;
-      name = company.name;
-      noe = company.numberofEmployee;
-      add = company.address;
-      esday = this.datePipe.transform(company.establishmentDay, 'yyyy-MM-dd');
-      imgPath = company.imgPath;
-      if (company.products.length > 0) {
-        for (const product of company.products) {
-          products.push(
-            new FormGroup({
-              id: new FormControl(product.id, Validators.required),
-              name: new FormControl(product.name, Validators.required),
-              price: new FormControl(product.price, [
-                Validators.required,
-                Validators.pattern(/^[1-9]+[0-9]*$/),
-              ]),
-              color: new FormControl(product.color, Validators.required),
-              imgPath: new FormControl(product.imgPath),
-            })
+      //const company = this.companyService.getCompanies()[this.id];
+      this.sub = this.store
+        .select('company')
+        .pipe(
+          map((companyState) => {
+            return companyState.companies.find((company, index) => {
+              return index === this.id;
+            });
+          })
+        )
+        .subscribe((company) => {
+          id = company.id;
+          name = company.name;
+          noe = company.numberofEmployee;
+          add = company.address;
+          esday = this.datePipe.transform(
+            company.establishmentDay,
+            'yyyy-MM-dd'
           );
-        }
-      }
+          imgPath = company.imgPath;
+
+          if (company.products.length > 0) {
+            for (const product of company.products) {
+              products.push(
+                new FormGroup({
+                  id: new FormControl(product.id),
+                  name: new FormControl(product.name, Validators.required),
+                  price: new FormControl(product.price, [
+                    Validators.required,
+                    Validators.pattern(/^[1-9]+[0-9]*$/),
+                  ]),
+                  color: new FormControl(product.color, Validators.required),
+                  imgPath: new FormControl(product.imgPath),
+                })
+              );
+            }
+          }
+        });
     }
 
     this.companyForm = new FormGroup({
-      id: new FormControl(id, Validators.required),
+      id: new FormControl(id),
       name: new FormControl(name, Validators.required),
       noe: new FormControl(noe, Validators.required),
       add: new FormControl(add, Validators.required),
@@ -127,7 +159,7 @@ export class CompanyEditComponent implements OnInit {
   onAddProduct() {
     (<FormArray>this.companyForm.get('products')).controls.push(
       new FormGroup({
-        id: new FormControl(null, Validators.required),
+        id: new FormControl(null),
         name: new FormControl(null, Validators.required),
         price: new FormControl(null, [
           Validators.required,

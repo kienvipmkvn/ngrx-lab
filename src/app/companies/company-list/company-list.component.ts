@@ -1,7 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Company } from '../company.model';
-import { CompanyService } from 'src/app/shared/company.service';
 import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+
+import * as fromApp from '../../store/app.reducer'
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-company-list',
@@ -12,11 +15,17 @@ export class CompanyListComponent implements OnInit, OnDestroy {
   companies: Company[];
   subscription: Subscription;
   isLoading = false;
-  constructor(public companyService: CompanyService) {}
+  errorMessage = null;
+  constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit(): void {
-    this.companies = this.companyService.getCompanies();
-    this.subscription = this.companyService.companyChanged.subscribe(companies=>{
+    this.subscription = this.store.select('company')
+    .pipe(map(companyState=>{
+      this.errorMessage = companyState.errorMsg;
+      this.isLoading = companyState.isLoading;
+      return companyState.companies
+    }))
+    .subscribe(companies=>{
       this.companies = companies;
     })
   }

@@ -4,13 +4,13 @@
   </div>
 </div>
 <hr />
-<div class="row" *ngIf="companyService.isLoading" style="text-align: center;">
+<div class="row" *ngIf="isLoading" style="text-align: center;">
   <app-loading-spinner></app-loading-spinner>
 </div>
-<div class="row" *ngIf="companyService.errorMessage && !companyService.isLoading" style="text-align: center;">
-  {{companyService.errorMessage}}
+<div class="row" *ngIf="errorMessage && !isLoading" style="text-align: center;">
+  {{errorMessage}}
 </div>
-<div class="row" *ngIf="!companyService.isLoading">
+<div class="row" *ngIf="!isLoading">
   <div class="col-xs-12">
     <app-company-item
       *ngFor="let company of companies; let i = index"

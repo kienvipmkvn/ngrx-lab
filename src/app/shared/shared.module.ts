@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
 import { Custom1 } from '../custom/custom1.directive';
 import { Custom2Directive } from '../custom/custom2.directive';
 import { LoadingSpinnerComponent } from './app-loading-spinner/app-loading-spinner.component';
-import { CommonModule } from '@angular/common';
 import { AlertComponent } from './alert/alert.component';
 
 @NgModule({
