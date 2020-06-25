@@ -57,7 +57,6 @@ export class CompanyDetailComponent implements OnInit {
       //this.companyService.deleteCompany(this.id);
       this.store.dispatch(new CompanyAction.DeleteCompany(this.id));
       this.router.navigate(['company']);
-      this.toastr.success("Delete success!", "ZZZ");
     }
   }
 }

@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import * as AuthActions from './auth.action';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 export interface AuthResponseData {
   idToken: string;
@@ -65,6 +66,7 @@ export class AuthEffects {
         })
         .pipe(
           map((resData) => {
+            this.toastr.info('Signup successfully!', 'ZZZ');
             return handleAuth(resData);
           }),
           catchError((error) => {
@@ -86,6 +88,7 @@ export class AuthEffects {
         })
         .pipe(
           map((resData) => {
+            this.toastr.info('Welcome back!', 'Login');
             return handleAuth(resData);
           }),
           catchError((error) => {
@@ -108,6 +111,7 @@ export class AuthEffects {
     ofType(AuthActions.LOGOUT),
     tap(() => {
       localStorage.clear();
+      this.toastr.info('Logout successfully!', 'ZZZ');
       this.router.navigate(['auth']);
     })
   );
@@ -115,15 +119,19 @@ export class AuthEffects {
   @Effect()
   autoLogin = this.actions$.pipe(
     ofType(AuthActions.AUTO_LOGIN),
-    map(()=>{
-      if(localStorage.getItem('userData')==null) return {type: 'test'};
-      else return new AuthActions.AuthenticateSuccess;
+    map(() => {
+      if (localStorage.getItem('userData') == null) return { type: 'test' };
+      else {
+        this.toastr.info('Welcome back!', 'Auto login');
+        return new AuthActions.AuthenticateSuccess()
+      };
     })
   );
 
   constructor(
     private actions$: Actions,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 }

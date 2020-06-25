@@ -82,11 +82,9 @@ export class CompanyEditComponent implements OnInit, OnDestroy {
       this.store.dispatch(
         new CompanyActions.UpdateCompany({ company: company, index: this.id })
       );
-      this.toastr.success("Edit success!", "ZZZ");
     } else {
       this.dataService.postCompany(com);
       //this.store.dispatch(new CompanyActions.AddCompany(company));
-      this.toastr.success("Create success!", "ZZZ");
     }
     this.router.navigate(['company']);}
   }

@@ -6,6 +6,7 @@ import { DataStorageService } from '../shared/data-storage.service';
 import * as fromApp from '../store/app.reducer';
 import * as AuthActions from '../auth/store/auth.action';
 import * as CompanyActions from '../companies/store/company.action'
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-header',
@@ -16,10 +17,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private subsciption: Subscription;
   isLogin = false;
 
-  constructor(public store: Store<fromApp.AppState>) { }
+  constructor(public store: Store<fromApp.AppState>, private toastr:ToastrService) { }
 
   ngOnInit(): void {
-    this.store.select('auth').subscribe(stateData=>{
+    this.subsciption = this.store.select('auth').subscribe(stateData=>{
       this.isLogin = stateData.isLogin;
     })
   }
@@ -35,7 +36,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   onLogout(){
     //this.authService.logout();
-    localStorage.clear();
+    //localStorage.clear();
     this.store.dispatch(new AuthActions.Logout());
+    //this.toastr.info("Logout successfully!", "ZZZ");
   }
 }

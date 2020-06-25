@@ -7,6 +7,7 @@ import { Product } from './product.model';
 import * as fromApp from '../store/app.reducer';
 import * as CompanyAction from '../companies/store/company.action';
 import { Store } from '@ngrx/store';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,8 @@ export class DataStorageService {
 
   constructor(
     private http: HttpClient,
-    private store: Store<fromApp.AppState>
+    private store: Store<fromApp.AppState>,
+    private toastr: ToastrService
   ) {}
 
   postCompany(company: {
@@ -43,6 +45,10 @@ export class DataStorageService {
           )
         )
       );
+    }, error=>{
+      this.toastr.error(error.message, "Cannot add company!")
+    }, ()=>{
+      this.toastr.success("Added successfully", "ZZZ");
     });
   }
 
@@ -86,10 +92,18 @@ export class DataStorageService {
     console.log(newCompany);
     this.http
       .put(this.rootUrl + 'Management/' + company.CompanyID, newCompany)
-      .subscribe();
+      .subscribe(next=>next, error=>{
+        this.toastr.error(error.message, "Cannot update company!")
+      }, ()=>{
+        this.toastr.success("Updated successfully", "ZZZ");
+      });
   }
 
   deleteCompany(index: number) {
-    this.http.delete(this.rootUrl + 'Management/' + index).subscribe();
+    this.http.delete(this.rootUrl + 'Management/' + index).subscribe(next=>next, error=>{
+      this.toastr.error(error.message, "Cannot delete company!")
+    }, ()=>{
+      this.toastr.success("Deleted successfully", "ZZZ");
+    });
   }
 }
