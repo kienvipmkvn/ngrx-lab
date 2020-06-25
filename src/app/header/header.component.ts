@@ -19,7 +19,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(public store: Store<fromApp.AppState>) { }
 
   ngOnInit(): void {
-    this.store.select('auth').subscribe(stateData=>{
+    this.subsciption = this.store.select('auth').subscribe(stateData=>{
       this.isLogin = stateData.isLogin;
     })
   }
